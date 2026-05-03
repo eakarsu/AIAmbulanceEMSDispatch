@@ -3,11 +3,14 @@ const db = require('../db');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const auth = require('../middleware/auth');
+const { authLimiter } = require('../middleware/rateLimiter');
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
+const VALID_ROLES = ['dispatcher', 'medic', 'paramedic', 'supervisor'];
+
 // POST /login
-router.post('/login', async (req, res) => {
+router.post('/login', authLimiter, async (req, res) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) {
@@ -41,12 +44,31 @@ router.post('/login', async (req, res) => {
 });
 
 // POST /register
-router.post('/register', async (req, res) => {
+router.post('/register', authLimiter, async (req, res) => {
   try {
     const { email, password, full_name, role } = req.body;
+
+    // Required field validation
     if (!email || !password || !full_name) {
       return res.status(400).json({ error: 'Email, password, and full_name are required.' });
     }
+
+    // Email format validation
+    const emailRx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRx.test(email)) {
+      return res.status(400).json({ error: 'Invalid email format.' });
+    }
+
+    // Password strength: minimum 8 characters, at least 1 letter and 1 digit
+    if (password.length < 8) {
+      return res.status(400).json({ error: 'Password must be at least 8 characters.' });
+    }
+    if (!/[a-zA-Z]/.test(password) || !/\d/.test(password)) {
+      return res.status(400).json({ error: 'Password must contain at least one letter and one number.' });
+    }
+
+    // Role allow-list
+    const assignedRole = role && VALID_ROLES.includes(role) ? role : 'dispatcher';
 
     const existing = await db.query('SELECT id FROM users WHERE email = $1', [email]);
     if (existing.rows.length > 0) {
@@ -58,7 +80,7 @@ router.post('/register', async (req, res) => {
 
     const result = await db.query(
       'INSERT INTO users (email, password, full_name, role) VALUES ($1, $2, $3, $4) RETURNING id, email, full_name, role, created_at',
-      [email, hashedPassword, full_name, role || 'dispatcher']
+      [email, hashedPassword, full_name, assignedRole]
     );
 
     const user = result.rows[0];

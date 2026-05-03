@@ -33,10 +33,18 @@ export default function AITriagePage() {
     setResult(null);
     setLoading(true);
     try {
+      // Map camelCase form fields to snake_case expected by backend
+      const payload = {
+        description: form.callDescription,
+        chief_complaint: form.chiefComplaint,
+        patient_age: form.patientAge,
+        patient_gender: form.patientGender,
+        additional_symptoms: form.additionalSymptoms,
+      };
       const res = await fetch('/api/ai/triage', {
         method: 'POST',
         headers: API_HEADERS(),
-        body: JSON.stringify(form),
+        body: JSON.stringify(payload),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Triage analysis failed');
@@ -48,7 +56,8 @@ export default function AITriagePage() {
     }
   };
 
-  const priority = result?.priority || result?.priorityScore || result?.score;
+  // Backend returns priority_score (snake_case)
+  const priority = result?.priority_score || result?.priority || result?.priorityScore || result?.score;
   const pConfig = PRIORITY_CONFIG[priority] || PRIORITY_CONFIG[3];
 
   return (

@@ -1,12 +1,43 @@
 const router = require('express').Router();
 const db = require('../db');
 const auth = require('../middleware/auth');
+const validate = require('../middleware/validate');
 
-// GET all calls (with optional ?status= and ?priority= filters)
+const callSchema = {
+  call_number: { required: true, type: 'string', maxLength: 50 },
+  call_type: { required: true, type: 'string', maxLength: 100 },
+  priority: { type: 'number', min: 1, max: 4 },
+  patient_age: { type: 'number', min: 0, max: 150 },
+};
+
+// ---------------------------------------------------------------------------
+// HIPAA audit log helper
+// ---------------------------------------------------------------------------
+async function auditCallAccess(req, callId) {
+  try {
+    const userId = req.user?.id || req.user?.userId || null;
+    const ip = req.headers['x-forwarded-for'] || req.socket?.remoteAddress || null;
+    await db.query(
+      `INSERT INTO audit_log (user_id, action, entity_id, entity_type, ip_address)
+       VALUES ($1, 'VIEW_CALL', $2, 'call', $3)`,
+      [userId, callId, ip]
+    );
+  } catch {
+    // Audit failures must not block the primary request
+  }
+}
+
+// ---------------------------------------------------------------------------
+// GET all calls (with optional ?status=, ?priority=, pagination ?page=&limit=)
+// ---------------------------------------------------------------------------
 router.get('/', auth, async (req, res) => {
   try {
     const { status, priority } = req.query;
-    let query = 'SELECT * FROM calls';
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 50));
+    const offset = (page - 1) * limit;
+
+    let baseQuery = 'FROM calls';
     const conditions = [];
     const params = [];
 
@@ -20,32 +51,51 @@ router.get('/', auth, async (req, res) => {
     }
 
     if (conditions.length > 0) {
-      query += ' WHERE ' + conditions.join(' AND ');
+      baseQuery += ' WHERE ' + conditions.join(' AND ');
     }
 
-    query += ' ORDER BY id DESC';
-    const result = await db.query(query, params);
-    res.json(result.rows);
+    // Count total
+    const countResult = await db.query(`SELECT COUNT(*) ${baseQuery}`, params);
+    const total = parseInt(countResult.rows[0].count);
+
+    // Fetch page
+    params.push(limit);
+    params.push(offset);
+    const result = await db.query(
+      `SELECT * ${baseQuery} ORDER BY id DESC LIMIT $${params.length - 1} OFFSET $${params.length}`,
+      params
+    );
+
+    res.json({
+      data: result.rows,
+      pagination: { page, limit, total, total_pages: Math.ceil(total / limit) }
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// GET call by id
+// ---------------------------------------------------------------------------
+// GET call by id — HIPAA audit logged
+// ---------------------------------------------------------------------------
 router.get('/:id', auth, async (req, res) => {
   try {
     const result = await db.query('SELECT * FROM calls WHERE id = $1', [req.params.id]);
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Call not found.' });
     }
+    // HIPAA audit trail
+    await auditCallAccess(req, req.params.id);
     res.json(result.rows[0]);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
+// ---------------------------------------------------------------------------
 // POST create call
-router.post('/', auth, async (req, res) => {
+// ---------------------------------------------------------------------------
+router.post('/', auth, validate(callSchema), async (req, res) => {
   try {
     const {
       call_number, call_type, priority, status, caller_name, caller_phone,
@@ -75,8 +125,10 @@ router.post('/', auth, async (req, res) => {
   }
 });
 
+// ---------------------------------------------------------------------------
 // PUT update call
-router.put('/:id', auth, async (req, res) => {
+// ---------------------------------------------------------------------------
+router.put('/:id', auth, validate(callSchema), async (req, res) => {
   try {
     const {
       call_number, call_type, priority, status, caller_name, caller_phone,
@@ -108,7 +160,9 @@ router.put('/:id', auth, async (req, res) => {
   }
 });
 
+// ---------------------------------------------------------------------------
 // DELETE call
+// ---------------------------------------------------------------------------
 router.delete('/:id', auth, async (req, res) => {
   try {
     const result = await db.query('DELETE FROM calls WHERE id = $1 RETURNING *', [req.params.id]);

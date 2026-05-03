@@ -341,7 +341,28 @@ CREATE TABLE IF NOT EXISTS qa_reviews (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
--- Mutual Aid
+-- AI Predictions
+CREATE TABLE IF NOT EXISTS predictions (
+  id SERIAL PRIMARY KEY,
+  location_zone VARCHAR(255),
+  hours_ahead INTEGER,
+  input_data JSONB,
+  result JSONB,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- HIPAA Audit Log
+CREATE TABLE IF NOT EXISTS audit_log (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER,
+  action VARCHAR(100) NOT NULL,
+  entity_id INTEGER,
+  entity_type VARCHAR(100),
+  ip_address VARCHAR(45),
+  timestamp TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Mutual Aid Requests
 CREATE TABLE IF NOT EXISTS mutual_aid (
   id SERIAL PRIMARY KEY,
   request_type VARCHAR(50), -- given, received
@@ -354,4 +375,33 @@ CREATE TABLE IF NOT EXISTS mutual_aid (
   reason TEXT,
   status VARCHAR(50) DEFAULT 'active', -- active, completed, cancelled
   created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Mutual Aid Agency Directory
+CREATE TABLE IF NOT EXISTS mutual_aid_agencies (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  agency_type VARCHAR(100),
+  contact_name VARCHAR(255),
+  contact_phone VARCHAR(50),
+  contact_email VARCHAR(255),
+  radio_frequency VARCHAR(50),
+  coverage_area TEXT,
+  capabilities TEXT,
+  agreement_type VARCHAR(100),
+  agreement_expiry DATE,
+  status VARCHAR(50) DEFAULT 'active',
+  notes TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- AI Analysis Results (history)
+CREATE TABLE IF NOT EXISTS ai_results (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER,
+  analysis_type VARCHAR(100) NOT NULL,
+  input_data JSONB,
+  result JSONB,
+  model VARCHAR(100),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );

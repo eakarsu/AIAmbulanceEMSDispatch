@@ -28,6 +28,16 @@ import AIPCRDraftPage from './pages/AIPCRDraftPage';
 import AIProtocolPage from './pages/AIProtocolPage';
 import AIDemandForecastPage from './pages/AIDemandForecastPage';
 import AIFatigueAnalysisPage from './pages/AIFatigueAnalysisPage';
+import AIHospitalDivertPage from './pages/AIHospitalDivertPage';
+import AIDrugInteractionPage from './pages/AIDrugInteractionPage';
+import AIMutualAidOptimizerPage from './pages/AIMutualAidOptimizerPage';
+import AICallerScriptPage from './pages/AICallerScriptPage';
+import AIQIDashboardPage from './pages/AIQIDashboardPage';
+import AIPostCallDebriefPage from './pages/AIPostCallDebriefPage';
+import AIIncidentPredictionPage from './pages/AIIncidentPredictionPage';
+import AICrewSchedulePage from './pages/AICrewSchedulePage';
+import AIMCIPlanPage from './pages/AIMCIPlanPage';
+import AIHistoryPage from './pages/AIHistoryPage';
 
 // ── Auth context ──────────────────────────────────────────────
 export const AuthContext = createContext(null);
@@ -112,6 +122,16 @@ const navSections = [
       { to: '/ai/protocol', icon: '💡', text: 'AI Protocol' },
       { to: '/ai/demand-forecast', icon: '📉', text: 'AI Demand Forecast' },
       { to: '/ai/fatigue-analysis', icon: '😴', text: 'AI Fatigue Analysis' },
+      { to: '/ai/incident-prediction', icon: '📍', text: 'Incident Prediction' },
+      { to: '/ai/crew-schedule', icon: '📅', text: 'Smart Scheduling' },
+      { to: '/ai/mci-plan', icon: '🚨', text: 'MCI Plan' },
+      { to: '/ai/hospital-divert', icon: '🏥', text: 'Hospital Divert' },
+      { to: '/ai/drug-interaction', icon: '💊', text: 'Drug Interaction' },
+      { to: '/ai/mutual-aid-optimizer', icon: '🤝', text: 'Mutual Aid Opt.' },
+      { to: '/ai/caller-script', icon: '📞', text: 'Caller Script' },
+      { to: '/ai/qi-dashboard', icon: '📈', text: 'QI Dashboard' },
+      { to: '/ai/post-call-debrief', icon: '💬', text: 'Post-Call Debrief' },
+      { to: '/ai/history', icon: '🕘', text: 'AI History' },
     ],
   },
 ];
@@ -197,6 +217,16 @@ export default function App() {
         <Route path="/ai/protocol" element={<Auth><AIProtocolPage /></Auth>} />
         <Route path="/ai/demand-forecast" element={<Auth><AIDemandForecastPage /></Auth>} />
         <Route path="/ai/fatigue-analysis" element={<Auth><AIFatigueAnalysisPage /></Auth>} />
+        <Route path="/ai/hospital-divert" element={<Auth><AIHospitalDivertPage /></Auth>} />
+        <Route path="/ai/drug-interaction" element={<Auth><AIDrugInteractionPage /></Auth>} />
+        <Route path="/ai/mutual-aid-optimizer" element={<Auth><AIMutualAidOptimizerPage /></Auth>} />
+        <Route path="/ai/caller-script" element={<Auth><AICallerScriptPage /></Auth>} />
+        <Route path="/ai/qi-dashboard" element={<Auth><AIQIDashboardPage /></Auth>} />
+        <Route path="/ai/post-call-debrief" element={<Auth><AIPostCallDebriefPage /></Auth>} />
+        <Route path="/ai/incident-prediction" element={<Auth><AIIncidentPredictionPage /></Auth>} />
+        <Route path="/ai/crew-schedule" element={<Auth><AICrewSchedulePage /></Auth>} />
+        <Route path="/ai/mci-plan" element={<Auth><AIMCIPlanPage /></Auth>} />
+        <Route path="/ai/history" element={<Auth><AIHistoryPage /></Auth>} />
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />

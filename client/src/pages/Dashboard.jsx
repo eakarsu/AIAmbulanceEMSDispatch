@@ -23,6 +23,16 @@ const aiCards = [
   { key: 'ai-protocol', label: 'Protocol Recommendation', icon: 'fa-stethoscope', color: '#70a1ff', route: '/ai/protocol' },
   { key: 'ai-demand', label: 'Resource Demand Forecast', icon: 'fa-chart-line', color: '#ffa502', route: '/ai/demand-forecast' },
   { key: 'ai-fatigue', label: 'Fatigue Risk Analysis', icon: 'fa-bed', color: '#ff4757', route: '/ai/fatigue-analysis' },
+  { key: 'ai-incident', label: 'Incident Prediction', icon: 'fa-map-marked', color: '#54a0ff', route: '/ai/incident-prediction' },
+  { key: 'ai-crew-sched', label: 'Smart Crew Scheduling', icon: 'fa-calendar-alt', color: '#5f27cd', route: '/ai/crew-schedule' },
+  { key: 'ai-mci', label: 'MCI Plan Generator', icon: 'fa-exclamation-triangle', color: '#ee5253', route: '/ai/mci-plan' },
+  { key: 'ai-divert', label: 'Hospital Divert Advisor', icon: 'fa-hospital', color: '#10ac84', route: '/ai/hospital-divert' },
+  { key: 'ai-drug', label: 'Drug Interaction Checker', icon: 'fa-pills', color: '#ff9f43', route: '/ai/drug-interaction' },
+  { key: 'ai-mutual', label: 'Mutual Aid Optimizer', icon: 'fa-handshake', color: '#00d2d3', route: '/ai/mutual-aid-optimizer' },
+  { key: 'ai-caller', label: 'Caller Reassurance Script', icon: 'fa-headset', color: '#01a3a4', route: '/ai/caller-script' },
+  { key: 'ai-qi', label: 'QI Dashboard', icon: 'fa-chart-line', color: '#2e86de', route: '/ai/qi-dashboard' },
+  { key: 'ai-debrief', label: 'Post-Call Debrief', icon: 'fa-comments', color: '#576574', route: '/ai/post-call-debrief' },
+  { key: 'ai-history', label: 'AI History', icon: 'fa-history', color: '#8395a7', route: '/ai/history' },
 ];
 
 const logisticsCards = [
@@ -51,6 +61,7 @@ export default function Dashboard() {
   const [counts, setCounts] = useState({});
   const [loading, setLoading] = useState(true);
   const [now, setNow] = useState(new Date());
+  const [expiringCerts, setExpiringCerts] = useState([]);
   const [quickStats, setQuickStats] = useState({
     activeCalls: 0,
     availableUnits: 0,
@@ -64,62 +75,100 @@ export default function Dashboard() {
     return () => clearInterval(t);
   }, []);
 
-  // Fetch data
+  // Fetch data — use the summary endpoint for efficiency, fall back to individual calls
   useEffect(() => {
     const headers = { Authorization: `Bearer ${token}` };
 
     const fetchAll = async () => {
-      const results = {};
-      await Promise.allSettled(
-        allEndpointCards.map(async (card) => {
-          try {
-            const res = await fetch(card.endpoint, { headers });
-            if (res.ok) {
-              const data = await res.json();
-              const arr = Array.isArray(data) ? data : data.data || data.results || [];
-              results[card.key] = Array.isArray(arr) ? arr.length : 0;
-            } else {
-              results[card.key] = 0;
-            }
-          } catch {
-            results[card.key] = 0;
-          }
-        })
-      );
-
-      setCounts(results);
+      try {
+        // Try the single summary endpoint first
+        const summaryRes = await fetch('/api/dispatch/summary', { headers });
+        if (summaryRes.ok) {
+          const summary = await summaryRes.json();
+          // Map summary fields to card keys
+          setCounts({
+            units: summary.units,
+            calls: summary.active_calls,
+            crew: summary.active_crew,
+            schedules: summary.upcoming_schedules,
+            pcr: summary.open_pcrs,
+            hospitals: summary.available_hospitals,
+            equipment: summary.equipment,
+            medications: summary.medications,
+            maintenance: summary.pending_maintenance,
+            certifications: summary.active_certifications,
+            billing: summary.open_billing,
+            incidents: summary.open_incidents,
+            metrics: summary.metrics_records,
+            protocols: summary.protocols,
+            'comm-logs': summary.comm_logs_24h,
+            exposure: summary.pending_exposure_followups,
+            'qa-reviews': summary.pending_qa_reviews,
+            'mutual-aid': summary.active_mutual_aid,
+          });
+          setQuickStats((prev) => ({
+            ...prev,
+            activeCalls: summary.active_calls,
+          }));
+        } else {
+          // Fall back to individual endpoint calls
+          const results = {};
+          await Promise.allSettled(
+            allEndpointCards.map(async (card) => {
+              try {
+                const res = await fetch(`${card.endpoint}?limit=1`, { headers });
+                if (res.ok) {
+                  const data = await res.json();
+                  results[card.key] = data.pagination?.total ?? (Array.isArray(data) ? data.length : 0);
+                } else {
+                  results[card.key] = 0;
+                }
+              } catch {
+                results[card.key] = 0;
+              }
+            })
+          );
+          setCounts(results);
+        }
+      } catch { /* ignore */ }
 
       // Derive quick stats from units & calls
       try {
-        const unitsRes = await fetch('/api/units', { headers });
+        const unitsRes = await fetch('/api/units?limit=100', { headers });
         if (unitsRes.ok) {
           const units = await unitsRes.json();
           const arr = Array.isArray(units) ? units : units.data || [];
           if (Array.isArray(arr)) {
             setQuickStats((prev) => ({
               ...prev,
-              availableUnits: arr.filter((u) => u.status === 'available' || u.status === 'Available').length,
-              enRouteUnits: arr.filter((u) => u.status === 'en_route' || u.status === 'En Route' || u.status === 'enroute').length,
+              availableUnits: arr.filter((u) => u.status === 'available').length,
+              enRouteUnits: arr.filter((u) => u.status === 'en_route').length,
             }));
           }
         }
       } catch {}
 
       try {
-        const callsRes = await fetch('/api/calls', { headers });
+        const callsRes = await fetch('/api/calls?limit=100', { headers });
         if (callsRes.ok) {
           const calls = await callsRes.json();
           const arr = Array.isArray(calls) ? calls : calls.data || [];
           if (Array.isArray(arr)) {
-            const active = arr.filter((c) => c.status === 'active' || c.status === 'dispatched' || c.status === 'en_route');
-            setQuickStats((prev) => ({ ...prev, activeCalls: active.length }));
-            // Avg response time
-            const times = arr.filter((c) => c.response_time_minutes).map((c) => c.response_time_minutes);
+            const times = arr.filter((c) => c.response_time_seconds).map((c) => c.response_time_seconds / 60);
             if (times.length > 0) {
               const avg = Math.round(times.reduce((a, b) => a + b, 0) / times.length);
-              setQuickStats((prev) => ({ ...prev, avgResponseTime: `${avg}:${String(0).padStart(2, '0')}` }));
+              setQuickStats((prev) => ({ ...prev, avgResponseTime: `${avg}:00` }));
             }
           }
+        }
+      } catch {}
+
+      // Fetch expiring certifications (within 30 days)
+      try {
+        const certRes = await fetch('/api/certifications/expiring?days=30', { headers });
+        if (certRes.ok) {
+          const certData = await certRes.json();
+          setExpiringCerts(certData.data || []);
         }
       } catch {}
 
@@ -228,6 +277,39 @@ export default function Dashboard() {
           <span style={{ fontSize: 28, fontWeight: 700, color: '#48dbfb' }}>{loading ? '--' : quickStats.avgResponseTime}</span>
         </div>
       </div>
+
+      {/* Certification Expiry Alerts */}
+      {expiringCerts.length > 0 && (
+        <div style={{ margin: '0 28px 20px', padding: '14px 20px', borderRadius: 12, background: 'rgba(255,165,2,0.08)', border: '1px solid rgba(255,165,2,0.3)', display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+          <i className="fas fa-exclamation-triangle" style={{ color: '#ffa502', fontSize: 18, marginTop: 2, flexShrink: 0 }} />
+          <div>
+            <div style={{ fontWeight: 700, color: '#ffa502', marginBottom: 4 }}>
+              Certification Expiry Alert — {expiringCerts.length} certification{expiringCerts.length !== 1 ? 's' : ''} expiring within 30 days
+            </div>
+            <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13, lineHeight: 1.6 }}>
+              {expiringCerts.slice(0, 3).map((c) => (
+                <span key={c.id} style={{ marginRight: 16 }}>
+                  {c.first_name} {c.last_name} — {c.certification_type} ({new Date(c.expiry_date).toLocaleDateString()})
+                </span>
+              ))}
+              {expiringCerts.length > 3 && (
+                <span
+                  style={{ color: '#ffa502', cursor: 'pointer', textDecoration: 'underline' }}
+                  onClick={() => navigate('/certifications')}
+                >
+                  +{expiringCerts.length - 3} more
+                </span>
+              )}
+            </div>
+          </div>
+          <button
+            onClick={() => navigate('/certifications')}
+            style={{ marginLeft: 'auto', padding: '6px 14px', borderRadius: 8, border: '1px solid rgba(255,165,2,0.4)', background: 'rgba(255,165,2,0.12)', color: '#ffa502', cursor: 'pointer', fontSize: 13, flexShrink: 0 }}
+          >
+            View All
+          </button>
+        </div>
+      )}
 
       {/* Sections */}
       <div style={{ padding: '0 28px' }}>

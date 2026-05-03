@@ -2,11 +2,25 @@ const router = require('express').Router();
 const db = require('../db');
 const auth = require('../middleware/auth');
 
-// GET all crew
+// GET all crew (with pagination ?page=&limit=)
 router.get('/', auth, async (req, res) => {
   try {
-    const result = await db.query('SELECT * FROM crew ORDER BY id DESC');
-    res.json(result.rows);
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 50));
+    const offset = (page - 1) * limit;
+
+    const countResult = await db.query('SELECT COUNT(*) FROM crew');
+    const total = parseInt(countResult.rows[0].count);
+
+    const result = await db.query(
+      'SELECT * FROM crew ORDER BY id DESC LIMIT $1 OFFSET $2',
+      [limit, offset]
+    );
+
+    res.json({
+      data: result.rows,
+      pagination: { page, limit, total, total_pages: Math.ceil(total / limit) }
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
