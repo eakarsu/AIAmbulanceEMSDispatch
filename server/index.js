@@ -69,6 +69,7 @@ app.use('/api/qa-reviews',     require('./routes/qaReviews'));
 app.use('/api/mutual-aid',     require('./routes/mutualAid'));
 app.use('/api/mutual-aid-agencies', require('./routes/mutualAidAgencies'));
 app.use('/api/ai',             require('./routes/ai'));
+app.use('/api/ai',             require('./routes/aiBacklog'));
 app.use('/api/dispatch',       require('./routes/dispatch'));
 // Dashboard summary shortcut (dispatched from dispatch router at /summary)
 // The route is GET /api/dispatch/summary
@@ -99,3 +100,20 @@ app.listen(PORT, () => {
 });
 
 module.exports = app;
+
+// BATCH_00_AUDIT_MOUNTS
+app.use('/api/demand-stream', require('./routes/demandStream'));
+app.use('/api/cardiac-prediction', require('./routes/cardiacPrediction'));
+app.use('/api/mutual-aid-orch', require('./routes/mutualAidOrch'));
+app.use('/api/community-paramedicine', require('./routes/communityParamedicine'));
+app.use('/api/rapidsos-bridge', require('./routes/rapidsosBridge'));
+
+// === Batch 00 Gaps & Frontend Mounts ===
+app.use('/api/gap-ai-post-hospital-patient-outcome', require('./routes/gap_ai_post_hospital_patient_outcome'));
+app.use('/api/gap-ai-staffing-optimization-based-predicted', require('./routes/gap_ai_staffing_optimization_based_predicted'));
+app.use('/api/gap-ai-route-hospital-optimization-traffic', require('./routes/gap_ai_route_hospital_optimization_traffic'));
+app.use('/api/gap-cad-computer-aided-dispatch-system', require('./routes/gap_cad_computer_aided_dispatch_system'));
+app.use('/api/gap-ehr-integration-real-time-bed', require('./routes/gap_ehr_integration_real_time_bed'));
+app.use('/api/gap-scenario-based-training-simulator', require('./routes/gap_scenario_based_training_simulator'));
+app.use('/api/gap-outbound-webhooks-inter-agency', require('./routes/gap_outbound_webhooks_inter_agency'));
+app.use('/api/gap-public-safety-gis-overlay', require('./routes/gap_public_safety_gis_overlay'));

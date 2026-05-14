@@ -38,6 +38,7 @@ import AIIncidentPredictionPage from './pages/AIIncidentPredictionPage';
 import AICrewSchedulePage from './pages/AICrewSchedulePage';
 import AIMCIPlanPage from './pages/AIMCIPlanPage';
 import AIHistoryPage from './pages/AIHistoryPage';
+import AIBacklogPage from './pages/AIBacklogPage';
 
 // ── Auth context ──────────────────────────────────────────────
 export const AuthContext = createContext(null);
@@ -132,6 +133,7 @@ const navSections = [
       { to: '/ai/qi-dashboard', icon: '📈', text: 'QI Dashboard' },
       { to: '/ai/post-call-debrief', icon: '💬', text: 'Post-Call Debrief' },
       { to: '/ai/history', icon: '🕘', text: 'AI History' },
+      { to: '/ai/backlog', icon: '🧪', text: 'AI Backlog Tools' },
     ],
   },
 ];
@@ -227,6 +229,7 @@ export default function App() {
         <Route path="/ai/crew-schedule" element={<Auth><AICrewSchedulePage /></Auth>} />
         <Route path="/ai/mci-plan" element={<Auth><AIMCIPlanPage /></Auth>} />
         <Route path="/ai/history" element={<Auth><AIHistoryPage /></Auth>} />
+        <Route path="/ai/backlog" element={<Auth><AIBacklogPage /></Auth>} />
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
