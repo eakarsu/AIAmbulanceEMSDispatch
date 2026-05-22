@@ -71,6 +71,7 @@ app.use('/api/mutual-aid-agencies', require('./routes/mutualAidAgencies'));
 app.use('/api/ai',             require('./routes/ai'));
 app.use('/api/ai',             require('./routes/aiBacklog'));
 app.use('/api/dispatch',       require('./routes/dispatch'));
+app.use('/api/stroke-bypass-readiness', require('./routes/strokeBypassReadiness'));
 // Dashboard summary shortcut (dispatched from dispatch router at /summary)
 // The route is GET /api/dispatch/summary
 

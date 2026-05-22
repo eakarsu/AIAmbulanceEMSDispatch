@@ -39,6 +39,12 @@ import AICrewSchedulePage from './pages/AICrewSchedulePage';
 import AIMCIPlanPage from './pages/AIMCIPlanPage';
 import AIHistoryPage from './pages/AIHistoryPage';
 import AIBacklogPage from './pages/AIBacklogPage';
+import StrokeBypassReadinessPage from './pages/StrokeBypassReadinessPage';
+
+import CodexCustomVizFeature from './pages/CodexCustomVizFeature';
+import CodexOperationsFeature from './pages/CodexOperationsFeature';
+
+import TimelineView from './pages/TimelineView';
 
 // ── Auth context ──────────────────────────────────────────────
 export const AuthContext = createContext(null);
@@ -99,6 +105,7 @@ const navSections = [
       { to: '/pcr', icon: '📋', text: 'PCR' },
       { to: '/protocols', icon: '📖', text: 'Protocols' },
       { to: '/hospitals', icon: '🏥', text: 'Hospitals' },
+      { to: '/stroke-bypass-readiness', icon: '🧠', text: 'Stroke Bypass' },
       { to: '/medications', icon: '💊', text: 'Medications' },
       { to: '/exposure', icon: '⚠️', text: 'Exposure Logs' },
       { to: '/qa-reviews', icon: '✅', text: 'QA Reviews' },
@@ -190,6 +197,10 @@ export default function App() {
   return (
     <AuthProvider>
       <Routes>
+        <Route path="/insights/timeline" element={<ProtectedRoute><TimelineView /></ProtectedRoute>} />
+        <Route path="/codex/custom-viz" element={<ProtectedRoute><CodexCustomVizFeature /></ProtectedRoute>} />
+        <Route path="/codex/operations" element={<ProtectedRoute><CodexOperationsFeature /></ProtectedRoute>} />
+
         {/* Public */}
         <Route path="/" element={<PublicHome />} />
 
@@ -201,6 +212,7 @@ export default function App() {
         <Route path="/schedules" element={<Auth><SchedulesPage /></Auth>} />
         <Route path="/pcr" element={<Auth><PCRPage /></Auth>} />
         <Route path="/hospitals" element={<Auth><HospitalsPage /></Auth>} />
+        <Route path="/stroke-bypass-readiness" element={<Auth><StrokeBypassReadinessPage /></Auth>} />
         <Route path="/equipment" element={<Auth><EquipmentPage /></Auth>} />
         <Route path="/medications" element={<Auth><MedicationsPage /></Auth>} />
         <Route path="/maintenance" element={<Auth><MaintenancePage /></Auth>} />
