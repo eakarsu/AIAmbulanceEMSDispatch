@@ -31,11 +31,6 @@ export default function Login() {
     }
   };
 
-  const handleQuickLogin = () => {
-    setEmail('admin@emsstation1.com');
-    setPassword('password123');
-  };
-
   return (
     <div style={styles.wrapper}>
       {/* Animated background */}
@@ -133,16 +128,6 @@ export default function Login() {
           style={styles.loginBtn}
         >
           {loading ? 'Authenticating...' : 'Sign In'}
-        </button>
-
-        {/* Quick Login */}
-        <button
-          type="button"
-          className="quick-btn"
-          onClick={handleQuickLogin}
-          style={styles.quickBtn}
-        >
-          Quick Login (Demo)
         </button>
 
         <p style={styles.footer}>

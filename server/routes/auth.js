@@ -7,8 +7,6 @@ const { authLimiter } = require('../middleware/rateLimiter');
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
-const VALID_ROLES = ['dispatcher', 'medic', 'paramedic', 'supervisor'];
-
 // POST /login
 router.post('/login', authLimiter, async (req, res) => {
   try {
@@ -39,14 +37,15 @@ router.post('/login', authLimiter, async (req, res) => {
       user: { id: user.id, email: user.email, full_name: user.full_name, role: user.role }
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Login error:', err);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
 // POST /register
 router.post('/register', authLimiter, async (req, res) => {
   try {
-    const { email, password, full_name, role } = req.body;
+    const { email, password, full_name } = req.body;
 
     // Required field validation
     if (!email || !password || !full_name) {
@@ -67,8 +66,8 @@ router.post('/register', authLimiter, async (req, res) => {
       return res.status(400).json({ error: 'Password must contain at least one letter and one number.' });
     }
 
-    // Role allow-list
-    const assignedRole = role && VALID_ROLES.includes(role) ? role : 'dispatcher';
+    // Public registration cannot self-provision dispatch authority.
+    const assignedRole = 'medic';
 
     const existing = await db.query('SELECT id FROM users WHERE email = $1', [email]);
     if (existing.rows.length > 0) {
@@ -92,7 +91,8 @@ router.post('/register', authLimiter, async (req, res) => {
 
     res.status(201).json({ token, user });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Registration error:', err);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
@@ -108,7 +108,8 @@ router.get('/me', auth, async (req, res) => {
     }
     res.json(result.rows[0]);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Profile error:', err);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 

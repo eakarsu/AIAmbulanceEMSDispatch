@@ -5,6 +5,8 @@ const path = require('path');
 
 // Load environment variables from project root .env
 require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
+if (!process.env.JWT_SECRET || process.env.JWT_SECRET.length < 32) throw new Error('JWT_SECRET must be at least 32 characters');
+if (!process.env.DATABASE_URL) throw new Error('DATABASE_URL must be configured');
 
 const { generalLimiter } = require('./middleware/rateLimiter');
 
@@ -72,6 +74,7 @@ app.use('/api/ai',             require('./routes/ai'));
 app.use('/api/ai',             require('./routes/aiBacklog'));
 app.use('/api/dispatch',       require('./routes/dispatch'));
 app.use('/api/stroke-bypass-readiness', require('./routes/strokeBypassReadiness'));
+app.use('/api/governed-dispatch', require('./routes/dispatchWorkflow'));
 // Dashboard summary shortcut (dispatched from dispatch router at /summary)
 // The route is GET /api/dispatch/summary
 
@@ -88,8 +91,7 @@ app.use((err, _req, res, _next) => {
   console.error('Unhandled error:', err.stack || err);
   const status = err.status || 500;
   res.status(status).json({
-    error: err.message || 'Internal server error',
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
+    error: status >= 500 ? 'Internal server error' : err.message,
   });
 });
 
@@ -101,20 +103,3 @@ app.listen(PORT, () => {
 });
 
 module.exports = app;
-
-// BATCH_00_AUDIT_MOUNTS
-app.use('/api/demand-stream', require('./routes/demandStream'));
-app.use('/api/cardiac-prediction', require('./routes/cardiacPrediction'));
-app.use('/api/mutual-aid-orch', require('./routes/mutualAidOrch'));
-app.use('/api/community-paramedicine', require('./routes/communityParamedicine'));
-app.use('/api/rapidsos-bridge', require('./routes/rapidsosBridge'));
-
-// === Batch 00 Gaps & Frontend Mounts ===
-app.use('/api/gap-ai-post-hospital-patient-outcome', require('./routes/gap_ai_post_hospital_patient_outcome'));
-app.use('/api/gap-ai-staffing-optimization-based-predicted', require('./routes/gap_ai_staffing_optimization_based_predicted'));
-app.use('/api/gap-ai-route-hospital-optimization-traffic', require('./routes/gap_ai_route_hospital_optimization_traffic'));
-app.use('/api/gap-cad-computer-aided-dispatch-system', require('./routes/gap_cad_computer_aided_dispatch_system'));
-app.use('/api/gap-ehr-integration-real-time-bed', require('./routes/gap_ehr_integration_real_time_bed'));
-app.use('/api/gap-scenario-based-training-simulator', require('./routes/gap_scenario_based_training_simulator'));
-app.use('/api/gap-outbound-webhooks-inter-agency', require('./routes/gap_outbound_webhooks_inter_agency'));
-app.use('/api/gap-public-safety-gis-overlay', require('./routes/gap_public_safety_gis_overlay'));

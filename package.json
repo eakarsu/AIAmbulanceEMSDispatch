@@ -9,7 +9,9 @@
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "seed": "node database/seed.js",
     "setup-db": "node database/setup.js",
-    "start": "bash start.sh"
+    "start": "bash start.sh",
+    "migrate": "node database/migrate.js",
+    "test": "node --test test/*.test.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
