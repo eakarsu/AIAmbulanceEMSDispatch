@@ -17,13 +17,24 @@ if [[ ! -d node_modules || ! -d client/node_modules ]]; then
   exit 1
 fi
 
-(cd . && node server/index.js) &
+: "${BACKEND_PORT:?BACKEND_PORT is required}"
+: "${FRONTEND_PORT:?FRONTEND_PORT is required}"
+[[ "$BACKEND_PORT" != "$FRONTEND_PORT" ]] || { echo "BACKEND_PORT and FRONTEND_PORT must differ." >&2; exit 1; }
+for runtime_port in "$BACKEND_PORT" "$FRONTEND_PORT"; do
+  if lsof -nP -iTCP:"$runtime_port" -sTCP:LISTEN >/dev/null 2>&1; then
+    echo "Port $runtime_port is already in use; no process was changed." >&2
+    exit 1
+  fi
+done
+
+(cd . && PORT="$BACKEND_PORT" node server/index.js) &
 backend_pid=$!
-(cd client && npm run dev -- --port "${FRONTEND_PORT:-3000}") &
+(cd client && npm run dev -- --host 127.0.0.1 --port "$FRONTEND_PORT" --strictPort) &
 frontend_pid=$!
 
 cleanup() {
   kill "$backend_pid" "$frontend_pid" 2>/dev/null || true
+  wait "$backend_pid" "$frontend_pid" 2>/dev/null || true
 }
 trap cleanup INT TERM EXIT
 while kill -0 "$backend_pid" 2>/dev/null && kill -0 "$frontend_pid" 2>/dev/null; do

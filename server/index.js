@@ -51,6 +51,7 @@ app.use('/api', generalLimiter);
 // API Routes
 // ---------------------------------------------------------------------------
 app.use('/api/auth',           require('./routes/auth'));
+app.use('/api/runtime-ai',     require('./routes/runtimeAi'));
 app.use('/api/units',          require('./routes/units'));
 app.use('/api/calls',          require('./routes/calls'));
 app.use('/api/crew',           require('./routes/crew'));

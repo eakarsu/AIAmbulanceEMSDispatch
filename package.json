@@ -11,6 +11,7 @@
     "setup-db": "node database/setup.js",
     "start": "bash start.sh",
     "migrate": "node database/migrate.js",
+    "create-admin": "node database/create-admin.js",
     "test": "node --test test/*.test.js"
   },
   "dependencies": {
