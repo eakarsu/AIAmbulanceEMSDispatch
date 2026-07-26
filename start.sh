@@ -91,6 +91,9 @@ if [[ ! -d node_modules || ! -d client/node_modules ]]; then
   echo "Dependencies are missing; run ./scripts/bootstrap.sh explicitly." >&2
   exit 1
 fi
+if [ "${NODE_ENV:-development}" != production ] && [ "${ENABLE_DEMO_CREDENTIAL_AUTOFILL:-true}" = true ]; then
+  node database/create-admin.js
+fi
 
 : "${BACKEND_PORT:?BACKEND_PORT is required}"
 : "${FRONTEND_PORT:?FRONTEND_PORT is required}"
