@@ -68,7 +68,9 @@ export default function UnitsPage() {
       const url = statusFilter ? `${API}?status=${statusFilter}` : API;
       const res = await fetch(url, { headers: getHeaders() });
       if (!res.ok) throw new Error('Failed to fetch units');
-      setItems(await res.json());
+      const payload = await res.json();
+      if (!Array.isArray(payload?.data)) throw new Error('Invalid list response');
+      setItems(payload.data);
       setError('');
     } catch (err) {
       setError(err.message);

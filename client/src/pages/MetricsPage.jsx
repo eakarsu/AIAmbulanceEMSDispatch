@@ -30,7 +30,9 @@ export default function MetricsPage() {
     try {
       const res = await fetch(API, { headers: getHeaders() });
       if (!res.ok) throw new Error('Failed to fetch metrics');
-      setItems(await res.json());
+      const payload = await res.json();
+      if (!Array.isArray(payload?.data)) throw new Error('Invalid list response');
+      setItems(payload.data);
     } catch (err) { setError(err.message); } finally { setLoading(false); }
   };
 

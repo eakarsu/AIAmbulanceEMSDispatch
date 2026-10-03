@@ -33,7 +33,8 @@ export default function EquipmentPage() {
       const res = await fetch(API, { headers: getHeaders() });
       if (!res.ok) throw new Error('Failed to fetch equipment');
       const data = await res.json();
-      setItems(data);
+      if (!Array.isArray(data?.data)) throw new Error('Invalid list response');
+      setItems(data.data);
     } catch (err) {
       setError(err.message);
     } finally {

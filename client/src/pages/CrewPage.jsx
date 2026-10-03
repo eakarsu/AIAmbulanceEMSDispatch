@@ -68,7 +68,9 @@ export default function CrewPage() {
     try {
       const res = await fetch(API, { headers: getHeaders() });
       if (!res.ok) throw new Error('Failed to fetch crew');
-      setItems(await res.json());
+      const payload = await res.json();
+      if (!Array.isArray(payload?.data)) throw new Error('Invalid list response');
+      setItems(payload.data);
       setError('');
     } catch (err) {
       setError(err.message);

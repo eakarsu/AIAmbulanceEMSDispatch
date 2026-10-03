@@ -93,7 +93,9 @@ export default function CallsPage() {
       const url = qs ? `${API}?${qs}` : API;
       const res = await fetch(url, { headers: getHeaders() });
       if (!res.ok) throw new Error('Failed to fetch calls');
-      setItems(await res.json());
+      const payload = await res.json();
+      if (!Array.isArray(payload?.data)) throw new Error('Invalid list response');
+      setItems(payload.data);
       setError('');
     } catch (err) {
       setError(err.message);
