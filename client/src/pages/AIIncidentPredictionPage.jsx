@@ -1,3 +1,4 @@
+import CompleteAIExamples, { AIRequiredButton } from "../components/CompleteAIExamples";
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import AIOutput from '../components/AIOutput';
@@ -40,11 +41,11 @@ export default function AIIncidentPredictionPage() {
         Predicts incident probability by zone for proactive resource pre-positioning.
       </p>
 
-      <form onSubmit={submit} style={{ display: 'grid', gap: 12, maxWidth: 600, margin: '24px 0' }}>
-        <input placeholder="Location Zone *" value={zone} onChange={(e) => setZone(e.target.value)} required style={inp} />
-        <input type="number" placeholder="Hours ahead" min={1} max={72} value={hours} onChange={(e) => setHours(e.target.value)} style={inp} />
-        <button type="submit" disabled={loading} style={btn}>{loading ? 'Predicting...' : 'Predict'}</button>
-      </form>
+      <CompleteAIExamples busy={loading} context="EMS planning review"><form onSubmit={submit} style={{ display: 'grid', gap: 12, maxWidth: 600, margin: '24px 0' }}>
+        <input data-ai-field="zone" placeholder="Location Zone *" value={zone} onChange={(e) => setZone(e.target.value)} required style={inp} />
+        <input data-ai-field="hours" type="number" placeholder="Hours ahead" min={1} max={72} value={hours} onChange={(e) => setHours(e.target.value)} style={inp} />
+        <AIRequiredButton data-ai-generate type="submit" disabled={loading} style={btn}>{loading ? 'Predicting...' : 'Predict'}</AIRequiredButton>
+      </form></CompleteAIExamples>
 
       {error && <div style={errBox}>{error}</div>}
       <AIOutput result={result} loading={loading} title="Incident Forecast" />

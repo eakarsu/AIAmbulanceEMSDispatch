@@ -1,9 +1,21 @@
+import FormattedAIReport from "../components/FormattedAIReport";
 import React, { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 
 const HEADERS = () => ({
   Authorization: `Bearer ${localStorage.getItem('token')}`,
 });
+
+function inputSummary(input) {
+  let value = input;
+  if (typeof value === 'string') {
+    try { value = JSON.parse(value); } catch { return value; }
+  }
+  if (!value || typeof value !== 'object') return String(value ?? 'No input recorded');
+  const summary = Object.entries(value).find(([, item]) => typeof item === 'string' && item.trim());
+  if (!summary) return 'Open to review request inputs';
+  return `${summary[0].replace(/[_-]/g, ' ')}: ${summary[1]}`;
+}
 
 export default function AIHistoryPage() {
   const [items, setItems] = useState([]);
@@ -19,7 +31,7 @@ export default function AIHistoryPage() {
       const res = await fetch(`/api/ai/history?page=${page}&limit=20`, { headers: HEADERS() });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed');
-      setItems(data.data || []);
+      setItems(Array.isArray(data?.data) ? data.data : []);
       setPag(data.pagination || { page: 1, total_pages: 1, total: 0, limit: 20 });
     } catch (err) { setError(err.message); }
     setLoading(false);
@@ -51,7 +63,7 @@ export default function AIHistoryPage() {
                   <td style={td}><strong>{it.analysis_type}</strong></td>
                   <td style={td}>{new Date(it.created_at).toLocaleString()}</td>
                   <td style={{ ...td, color: 'rgba(255,255,255,0.5)', fontSize: 12 }}>
-                    {typeof it.input_data === 'string' ? it.input_data : JSON.stringify(it.input_data)}
+                    {inputSummary(it.input_data)}
                   </td>
                 </tr>
               ))}
@@ -74,9 +86,9 @@ export default function AIHistoryPage() {
           <div style={{ background: '#0f172a', padding: 24, borderRadius: 12, maxWidth: 800, width: '90%', maxHeight: '85vh', overflow: 'auto' }} onClick={(e) => e.stopPropagation()}>
             <h2 style={{ color: '#fff' }}>{selected.analysis_type}</h2>
             <h4>Input</h4>
-            <pre style={{ color: '#cbd5e1', fontSize: 12, whiteSpace: 'pre-wrap' }}>{JSON.stringify(selected.input_data, null, 2)}</pre>
+            <FormattedAIReport response={selected.input_data} title="Request inputs" />
             <h4>Result</h4>
-            <pre style={{ color: '#cbd5e1', fontSize: 12, whiteSpace: 'pre-wrap' }}>{JSON.stringify(selected.result, null, 2)}</pre>
+            <FormattedAIReport response={selected.result} />
             <button onClick={() => setSelected(null)} style={btn}>Close</button>
           </div>
         </div>

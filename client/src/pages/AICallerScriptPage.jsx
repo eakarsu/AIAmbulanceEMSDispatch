@@ -1,3 +1,4 @@
+import CompleteAIExamples, { AIRequiredButton } from "../components/CompleteAIExamples";
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import AIOutput from '../components/AIOutput';
@@ -45,15 +46,15 @@ export default function AICallerScriptPage() {
         AI generates pre-arrival caller instructions (CPR, bleeding control, etc.) while unit is en route.
       </p>
 
-      <form onSubmit={submit} style={{ display: 'grid', gap: 12, maxWidth: 700, margin: '24px 0' }}>
-        <input placeholder="Chief Complaint *" value={form.chief_complaint} onChange={set('chief_complaint')} required style={inp} />
+      <CompleteAIExamples busy={loading} context="EMS planning review"><form onSubmit={submit} style={{ display: 'grid', gap: 12, maxWidth: 700, margin: '24px 0' }}>
+        <input data-ai-field="chief_complaint" placeholder="Chief Complaint *" value={form.chief_complaint} onChange={set('chief_complaint')} required style={inp} />
         <div style={{ display: 'flex', gap: 12 }}>
-          <input placeholder="Patient Age" value={form.patient_age} onChange={set('patient_age')} style={{ ...inp, flex: 1 }} />
-          <input placeholder="ETA (minutes)" value={form.time_to_arrival_minutes} onChange={set('time_to_arrival_minutes')} style={{ ...inp, flex: 1 }} />
+          <input data-ai-field="patient_age" placeholder="Patient Age" value={form.patient_age} onChange={set('patient_age')} style={{ ...inp, flex: 1 }} />
+          <input data-ai-field="time_to_arrival_minutes" placeholder="ETA (minutes)" value={form.time_to_arrival_minutes} onChange={set('time_to_arrival_minutes')} style={{ ...inp, flex: 1 }} />
         </div>
-        <textarea placeholder='Vitals (free text or JSON like {"hr":120,"bp":"90/60"})' value={form.vitals} onChange={set('vitals')} style={{ ...inp, minHeight: 70, resize: 'vertical' }} />
-        <button type="submit" disabled={loading} style={btn}>{loading ? 'Generating...' : 'Generate Script'}</button>
-      </form>
+        <textarea data-ai-field="vitals" placeholder='Vitals (free text or JSON like {"hr":120,"bp":"90/60"})' value={form.vitals} onChange={set('vitals')} style={{ ...inp, minHeight: 70, resize: 'vertical' }} />
+        <AIRequiredButton data-ai-generate type="submit" disabled={loading} style={btn}>{loading ? 'Generating...' : 'Generate Script'}</AIRequiredButton>
+      </form></CompleteAIExamples>
 
       {error && <div style={errBox}>{error}</div>}
       <AIOutput result={result} loading={loading} title="Caller Pre-Arrival Script" />

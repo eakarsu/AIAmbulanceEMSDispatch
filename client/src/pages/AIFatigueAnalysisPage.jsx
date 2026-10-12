@@ -1,3 +1,4 @@
+import CompleteAIExamples, { AIRequiredButton } from "../components/CompleteAIExamples";
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -229,10 +230,10 @@ export default function AIFatigueAnalysisPage() {
             <i className="fas fa-user-clock" style={{ color: '#00d4ff', marginRight: 8 }} />
             Crew & Shift Data
           </h2>
-          <form onSubmit={handleSubmit}>
+          <CompleteAIExamples busy={loading} context="EMS planning review"><form onSubmit={handleSubmit}>
             <div style={s.field}>
               <label style={s.label}>Crew Member</label>
-              <select
+              <select data-ai-field="crewMember"
                 style={s.input}
                 value={form.crewMember}
                 onChange={set('crewMember')}
@@ -251,7 +252,7 @@ export default function AIFatigueAnalysisPage() {
             </div>
 
             <div style={{ ...s.field, display: 'flex', alignItems: 'center', gap: 10 }}>
-              <input
+              <input data-ai-field="analyzeAll"
                 type="checkbox"
                 id="analyzeAll"
                 checked={form.analyzeAll}
@@ -266,33 +267,33 @@ export default function AIFatigueAnalysisPage() {
             <div style={s.row}>
               <div style={{ flex: 1 }}>
                 <label style={s.label}>Shift Duration (hrs)</label>
-                <input style={s.input} type="number" value={form.shiftDuration} onChange={set('shiftDuration')} placeholder="e.g., 12" min="0" max="48" />
+                <input data-ai-field="shiftDuration" style={s.input} type="number" value={form.shiftDuration} onChange={set('shiftDuration')} placeholder="e.g., 12" min="0" max="48" />
               </div>
               <div style={{ flex: 1 }}>
                 <label style={s.label}>Consecutive Hours</label>
-                <input style={s.input} type="number" value={form.consecutiveHoursWorked} onChange={set('consecutiveHoursWorked')} placeholder="e.g., 16" min="0" max="72" />
+                <input data-ai-field="consecutiveHoursWorked" style={s.input} type="number" value={form.consecutiveHoursWorked} onChange={set('consecutiveHoursWorked')} placeholder="e.g., 16" min="0" max="72" />
               </div>
             </div>
 
             <div style={s.row}>
               <div style={{ flex: 1 }}>
                 <label style={s.label}>Calls This Shift</label>
-                <input style={s.input} type="number" value={form.numberOfCalls} onChange={set('numberOfCalls')} placeholder="e.g., 8" min="0" />
+                <input data-ai-field="numberOfCalls" style={s.input} type="number" value={form.numberOfCalls} onChange={set('numberOfCalls')} placeholder="e.g., 8" min="0" />
               </div>
               <div style={{ flex: 1 }}>
                 <label style={s.label}>Hours Since Rest</label>
-                <input style={s.input} type="number" value={form.timeSinceLastRest} onChange={set('timeSinceLastRest')} placeholder="e.g., 6" min="0" />
+                <input data-ai-field="timeSinceLastRest" style={s.input} type="number" value={form.timeSinceLastRest} onChange={set('timeSinceLastRest')} placeholder="e.g., 6" min="0" />
               </div>
             </div>
 
-            <button type="submit" style={s.submitBtn} disabled={loading} className="ai-submit-btn">
+            <AIRequiredButton data-ai-generate type="submit" style={s.submitBtn} disabled={loading} className="ai-submit-btn">
               {loading ? (
                 <span><i className="fas fa-spinner fa-spin" style={{ marginRight: 8 }} />Analyzing fatigue risk...</span>
               ) : (
                 <span><i className="fas fa-shield-alt" style={{ marginRight: 8 }} />Analyze Fatigue Risk</span>
               )}
-            </button>
-          </form>
+            </AIRequiredButton>
+          </form></CompleteAIExamples>
         </div>
 
         {/* Results */}

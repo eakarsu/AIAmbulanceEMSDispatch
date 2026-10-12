@@ -1,3 +1,4 @@
+import CompleteAIExamples, { AIRequiredButton } from "../components/CompleteAIExamples";
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -146,24 +147,24 @@ export default function AIUnitSelectionPage() {
             <i className="fas fa-search-location" style={{ color: '#00d4ff', marginRight: 8 }} />
             Call Parameters
           </h2>
-          <form onSubmit={handleSubmit}>
+          <CompleteAIExamples busy={loading} context="EMS planning review"><form onSubmit={handleSubmit}>
             <div style={s.field}>
               <label style={s.label}>Call Type</label>
-              <select style={s.input} value={form.callType} onChange={set('callType')} required>
+              <select data-ai-field="callType" style={s.input} value={form.callType} onChange={set('callType')} required>
                 <option value="">Select call type...</option>
                 {CALL_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
               </select>
             </div>
             <div style={s.field}>
               <label style={s.label}>Priority Level</label>
-              <select style={s.input} value={form.priority} onChange={set('priority')} required>
+              <select data-ai-field="priority" style={s.input} value={form.priority} onChange={set('priority')} required>
                 <option value="">Select priority...</option>
                 {PRIORITIES.map((p) => <option key={p.value} value={p.value}>{p.label}</option>)}
               </select>
             </div>
             <div style={s.field}>
               <label style={s.label}>Location Address</label>
-              <input
+              <input data-ai-field="locationAddress"
                 style={s.input}
                 type="text"
                 value={form.locationAddress}
@@ -174,21 +175,21 @@ export default function AIUnitSelectionPage() {
             </div>
             <div style={s.field}>
               <label style={s.label}>Special Requirements</label>
-              <textarea
+              <textarea data-ai-field="specialRequirements"
                 style={{ ...s.input, ...s.textarea }}
                 value={form.specialRequirements}
                 onChange={set('specialRequirements')}
                 placeholder="e.g., Bariatric equipment, pediatric supplies, ALS required..."
               />
             </div>
-            <button type="submit" style={s.submitBtn} disabled={loading} className="ai-submit-btn">
+            <AIRequiredButton data-ai-generate type="submit" style={s.submitBtn} disabled={loading} className="ai-submit-btn">
               {loading ? (
                 <span><i className="fas fa-spinner fa-spin" style={{ marginRight: 8 }} />Finding optimal unit...</span>
               ) : (
                 <span><i className="fas fa-crosshairs" style={{ marginRight: 8 }} />Find Best Unit</span>
               )}
-            </button>
-          </form>
+            </AIRequiredButton>
+          </form></CompleteAIExamples>
         </div>
 
         {/* Results */}

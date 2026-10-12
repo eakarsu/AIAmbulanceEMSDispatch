@@ -82,6 +82,15 @@ app.use('/api/governed-dispatch', require('./routes/dispatchWorkflow'));
 // ---------------------------------------------------------------------------
 // Error-handling middleware
 // ---------------------------------------------------------------------------
+// Advisory AI reports only; native execution and approval routes stay unchanged.
+// (Registered before the 404 catch-all so the AI workspace is reachable.)
+const aiWorkspaceSupport = require("./aiWorkspaceAdapters.cjs");
+const aiWorkspaceDatabase = require("./db.js").pool;
+app.use('/api/report-workspace', require("./aiWorkspace.cjs").createAIWorkspaceRouter({
+  pool: aiWorkspaceDatabase, authenticateToken: require("./middleware/auth.js"),
+  aiRateLimiter: aiWorkspaceSupport.createWorkspaceLimiter(), features: require("./aiWorkspaceFeatures.json"),
+}));
+
 // 404 – no route matched
 app.use((_req, res, _next) => {
   res.status(404).json({ error: 'Route not found' });

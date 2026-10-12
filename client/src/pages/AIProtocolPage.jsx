@@ -1,3 +1,4 @@
+import CompleteAIExamples, { AIRequiredButton } from "../components/CompleteAIExamples";
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -162,14 +163,14 @@ export default function AIProtocolPage() {
             <i className="fas fa-user-md" style={{ color: '#00d4ff', marginRight: 8 }} />
             Clinical Parameters
           </h2>
-          <form onSubmit={handleSubmit}>
+          <CompleteAIExamples busy={loading} context="EMS planning review"><form onSubmit={handleSubmit}>
             <div style={s.field}>
               <label style={s.label}>Chief Complaint</label>
-              <input style={s.input} value={form.chiefComplaint} onChange={set('chiefComplaint')} placeholder="e.g., Chest pain, shortness of breath" required />
+              <input data-ai-field="chiefComplaint" style={s.input} value={form.chiefComplaint} onChange={set('chiefComplaint')} placeholder="e.g., Chest pain, shortness of breath" required />
             </div>
             <div style={s.field}>
               <label style={s.label}>Patient Age</label>
-              <input style={s.input} type="number" value={form.patientAge} onChange={set('patientAge')} placeholder="Age in years" />
+              <input data-ai-field="patientAge" style={s.input} type="number" value={form.patientAge} onChange={set('patientAge')} placeholder="Age in years" />
             </div>
             <div style={{ marginBottom: 18 }}>
               <label style={{ ...s.label, marginBottom: 10 }}>
@@ -178,42 +179,42 @@ export default function AIProtocolPage() {
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
                 <div>
                   <span style={s.miniLabel}>BP</span>
-                  <input style={{ ...s.input, padding: '8px 10px', fontSize: 13 }} value={form.bp} onChange={set('bp')} placeholder="120/80" />
+                  <input data-ai-field="bp" style={{ ...s.input, padding: '8px 10px', fontSize: 13 }} value={form.bp} onChange={set('bp')} placeholder="120/80" />
                 </div>
                 <div>
                   <span style={s.miniLabel}>HR</span>
-                  <input style={{ ...s.input, padding: '8px 10px', fontSize: 13 }} value={form.hr} onChange={set('hr')} placeholder="80" />
+                  <input data-ai-field="hr" style={{ ...s.input, padding: '8px 10px', fontSize: 13 }} value={form.hr} onChange={set('hr')} placeholder="80" />
                 </div>
                 <div>
                   <span style={s.miniLabel}>RR</span>
-                  <input style={{ ...s.input, padding: '8px 10px', fontSize: 13 }} value={form.rr} onChange={set('rr')} placeholder="16" />
+                  <input data-ai-field="rr" style={{ ...s.input, padding: '8px 10px', fontSize: 13 }} value={form.rr} onChange={set('rr')} placeholder="16" />
                 </div>
                 <div>
                   <span style={s.miniLabel}>SpO2</span>
-                  <input style={{ ...s.input, padding: '8px 10px', fontSize: 13 }} value={form.spo2} onChange={set('spo2')} placeholder="98%" />
+                  <input data-ai-field="spo2" style={{ ...s.input, padding: '8px 10px', fontSize: 13 }} value={form.spo2} onChange={set('spo2')} placeholder="98%" />
                 </div>
               </div>
             </div>
             <div style={s.field}>
               <label style={s.label}>Allergies</label>
-              <input style={s.input} value={form.allergies} onChange={set('allergies')} placeholder="NKDA or list known allergies" />
+              <input data-ai-field="allergies" style={s.input} value={form.allergies} onChange={set('allergies')} placeholder="NKDA or list known allergies" />
             </div>
             <div style={s.field}>
               <label style={s.label}>Current Medications</label>
-              <input style={s.input} value={form.currentMedications} onChange={set('currentMedications')} placeholder="List current medications" />
+              <input data-ai-field="currentMedications" style={s.input} value={form.currentMedications} onChange={set('currentMedications')} placeholder="List current medications" />
             </div>
             <div style={s.field}>
               <label style={s.label}>Symptoms Description</label>
-              <textarea style={{ ...s.input, ...s.textarea, minHeight: 80 }} value={form.symptomsDescription} onChange={set('symptomsDescription')} placeholder="Detailed symptoms description..." required />
+              <textarea data-ai-field="symptomsDescription" style={{ ...s.input, ...s.textarea, minHeight: 80 }} value={form.symptomsDescription} onChange={set('symptomsDescription')} placeholder="Detailed symptoms description..." required />
             </div>
-            <button type="submit" style={s.submitBtn} disabled={loading} className="ai-submit-btn">
+            <AIRequiredButton data-ai-generate type="submit" style={s.submitBtn} disabled={loading} className="ai-submit-btn">
               {loading ? (
                 <span><i className="fas fa-spinner fa-spin" style={{ marginRight: 8 }} />Analyzing protocols...</span>
               ) : (
                 <span><i className="fas fa-book-medical" style={{ marginRight: 8 }} />Get Protocol Recommendation</span>
               )}
-            </button>
-          </form>
+            </AIRequiredButton>
+          </form></CompleteAIExamples>
         </div>
 
         {/* Results */}

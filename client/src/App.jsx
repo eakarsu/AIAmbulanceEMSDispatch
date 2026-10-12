@@ -1,3 +1,4 @@
+import AIReportLibrary from "./components/AIReportLibrary";
 import React, { createContext, useState, useEffect } from 'react';
 import { Routes, Route, Navigate, Link, useLocation } from 'react-router-dom';
 
@@ -158,7 +159,7 @@ function Layout({ children }) {
           <span className="sidebar-logo-text">EMS Dispatch</span>
         </div>
 
-        <nav className="sidebar-nav">
+        <nav className="sidebar-nav"><AIReportLibrary />
           {navSections.map((section) => (
             <div key={section.label} className="nav-section">
               <div className="nav-section-label">{section.label}</div>

@@ -1,3 +1,4 @@
+import CompleteAIExamples, { AIRequiredButton } from "../components/CompleteAIExamples";
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import AIOutput from '../components/AIOutput';
@@ -41,12 +42,12 @@ export default function AIMCIPlanPage() {
         AI generates an ICS-structured Mass Casualty Incident response plan.
       </p>
 
-      <form onSubmit={submit} style={{ display: 'grid', gap: 12, maxWidth: 600, margin: '24px 0' }}>
-        <input placeholder="Incident Type *" value={form.incident_type} onChange={set('incident_type')} required style={inp} />
-        <input type="number" min={1} placeholder="Estimated Casualties *" value={form.estimated_casualties} onChange={set('estimated_casualties')} required style={inp} />
-        <input placeholder="Location *" value={form.location} onChange={set('location')} required style={inp} />
-        <button type="submit" disabled={loading} style={btn}>{loading ? 'Generating...' : 'Generate MCI Plan'}</button>
-      </form>
+      <CompleteAIExamples busy={loading} context="EMS planning review"><form onSubmit={submit} style={{ display: 'grid', gap: 12, maxWidth: 600, margin: '24px 0' }}>
+        <input data-ai-field="incident_type" placeholder="Incident Type *" value={form.incident_type} onChange={set('incident_type')} required style={inp} />
+        <input data-ai-field="estimated_casualties" type="number" min={1} placeholder="Estimated Casualties *" value={form.estimated_casualties} onChange={set('estimated_casualties')} required style={inp} />
+        <input data-ai-field="location" placeholder="Location *" value={form.location} onChange={set('location')} required style={inp} />
+        <AIRequiredButton data-ai-generate type="submit" disabled={loading} style={btn}>{loading ? 'Generating...' : 'Generate MCI Plan'}</AIRequiredButton>
+      </form></CompleteAIExamples>
 
       {error && <div style={errBox}>{error}</div>}
       <AIOutput result={result} loading={loading} title="MCI Response Plan" />

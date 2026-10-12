@@ -1,3 +1,4 @@
+import CompleteAIExamples, { AIRequiredButton } from "../components/CompleteAIExamples";
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import AIOutput from '../components/AIOutput';
@@ -47,16 +48,16 @@ export default function AIDrugInteractionPage() {
         AI flags drug-drug, drug-allergy, and dosage issues before PCR submission.
       </p>
 
-      <form onSubmit={submit} style={{ display: 'grid', gap: 12, maxWidth: 700, margin: '24px 0' }}>
-        <input placeholder="Medications (comma separated, e.g. aspirin, nitroglycerin) *" value={medsText} onChange={(e) => setMedsText(e.target.value)} required style={inp} />
-        <input placeholder="Allergies (e.g. PCN, sulfa)" value={allergies} onChange={(e) => setAllergies(e.target.value)} style={inp} />
+      <CompleteAIExamples busy={loading} context="EMS planning review"><form onSubmit={submit} style={{ display: 'grid', gap: 12, maxWidth: 700, margin: '24px 0' }}>
+        <input data-ai-field="medsText" placeholder="Medications (comma separated, e.g. aspirin, nitroglycerin) *" value={medsText} onChange={(e) => setMedsText(e.target.value)} required style={inp} />
+        <input data-ai-field="allergies" placeholder="Allergies (e.g. PCN, sulfa)" value={allergies} onChange={(e) => setAllergies(e.target.value)} style={inp} />
         <div style={{ display: 'flex', gap: 12 }}>
-          <input placeholder="Patient Age" value={age} onChange={(e) => setAge(e.target.value)} style={{ ...inp, flex: 1 }} />
-          <input placeholder="Weight (kg)" value={weight} onChange={(e) => setWeight(e.target.value)} style={{ ...inp, flex: 1 }} />
+          <input data-ai-field="age" placeholder="Patient Age" value={age} onChange={(e) => setAge(e.target.value)} style={{ ...inp, flex: 1 }} />
+          <input data-ai-field="weight" placeholder="Weight (kg)" value={weight} onChange={(e) => setWeight(e.target.value)} style={{ ...inp, flex: 1 }} />
         </div>
-        <input placeholder="Active Conditions" value={conditions} onChange={(e) => setConditions(e.target.value)} style={inp} />
-        <button type="submit" disabled={loading} style={btn}>{loading ? 'Checking...' : 'Check Interactions'}</button>
-      </form>
+        <input data-ai-field="conditions" placeholder="Active Conditions" value={conditions} onChange={(e) => setConditions(e.target.value)} style={inp} />
+        <AIRequiredButton data-ai-generate type="submit" disabled={loading} style={btn}>{loading ? 'Checking...' : 'Check Interactions'}</AIRequiredButton>
+      </form></CompleteAIExamples>
 
       {error && <div style={errBox}>{error}</div>}
       <AIOutput result={result} loading={loading} title="Interaction Analysis" />

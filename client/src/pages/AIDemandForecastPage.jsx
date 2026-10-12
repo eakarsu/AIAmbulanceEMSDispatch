@@ -1,3 +1,4 @@
+import CompleteAIExamples, { AIRequiredButton } from "../components/CompleteAIExamples";
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -153,17 +154,17 @@ export default function AIDemandForecastPage() {
             <i className="fas fa-sliders-h" style={{ color: '#00d4ff', marginRight: 8 }} />
             Forecast Parameters
           </h2>
-          <form onSubmit={handleSubmit}>
+          <CompleteAIExamples busy={loading} context="EMS planning review"><form onSubmit={handleSubmit}>
             <div style={s.field}>
               <label style={s.label}>Forecast Period</label>
-              <select style={s.input} value={form.forecastPeriod} onChange={set('forecastPeriod')} required>
+              <select data-ai-field="forecastPeriod" style={s.input} value={form.forecastPeriod} onChange={set('forecastPeriod')} required>
                 <option value="">Select period...</option>
                 {FORECAST_PERIODS.map(p => <option key={p.value} value={p.value}>{p.label}</option>)}
               </select>
             </div>
 
             <div style={{ ...s.field, display: 'flex', alignItems: 'center', gap: 10 }}>
-              <input
+              <input data-ai-field="dayOfWeekConsideration"
                 type="checkbox"
                 id="dow"
                 checked={form.dayOfWeekConsideration}
@@ -177,12 +178,12 @@ export default function AIDemandForecastPage() {
 
             <div style={s.field}>
               <label style={s.label}>Special Events</label>
-              <input style={s.input} value={form.specialEvents} onChange={set('specialEvents')} placeholder="e.g., Stadium concert, marathon, festival" />
+              <input data-ai-field="specialEvents" style={s.input} value={form.specialEvents} onChange={set('specialEvents')} placeholder="e.g., Stadium concert, marathon, festival" />
             </div>
 
             <div style={s.field}>
               <label style={s.label}>Weather Conditions</label>
-              <select style={s.input} value={form.weatherConditions} onChange={set('weatherConditions')}>
+              <select data-ai-field="weatherConditions" style={s.input} value={form.weatherConditions} onChange={set('weatherConditions')}>
                 <option value="">Select weather...</option>
                 {WEATHER_OPTIONS.map(w => <option key={w} value={w}>{w}</option>)}
               </select>
@@ -190,20 +191,20 @@ export default function AIDemandForecastPage() {
 
             <div style={s.field}>
               <label style={s.label}>Historical Period to Analyze</label>
-              <select style={s.input} value={form.historicalPeriod} onChange={set('historicalPeriod')}>
+              <select data-ai-field="historicalPeriod" style={s.input} value={form.historicalPeriod} onChange={set('historicalPeriod')}>
                 <option value="">Select period...</option>
                 {HISTORICAL_PERIODS.map(p => <option key={p.value} value={p.value}>{p.label}</option>)}
               </select>
             </div>
 
-            <button type="submit" style={s.submitBtn} disabled={loading} className="ai-submit-btn">
+            <AIRequiredButton data-ai-generate type="submit" style={s.submitBtn} disabled={loading} className="ai-submit-btn">
               {loading ? (
                 <span><i className="fas fa-spinner fa-spin" style={{ marginRight: 8 }} />Generating forecast...</span>
               ) : (
                 <span><i className="fas fa-chart-line" style={{ marginRight: 8 }} />Generate Forecast</span>
               )}
-            </button>
-          </form>
+            </AIRequiredButton>
+          </form></CompleteAIExamples>
         </div>
 
         {/* Results */}

@@ -80,8 +80,8 @@ export default function SchedulesPage() {
         fetch(CREW_API, { headers: getHeaders() }),
         fetch(UNITS_API, { headers: getHeaders() }),
       ]);
-      if (crewRes.ok) setCrew(await crewRes.json());
-      if (unitsRes.ok) setUnits(await unitsRes.json());
+      if (crewRes.ok) { const payload = await crewRes.json(); setCrew(Array.isArray(payload?.data) ? payload.data : []); }
+      if (unitsRes.ok) { const payload = await unitsRes.json(); setUnits(Array.isArray(payload?.data) ? payload.data : []); }
     } catch (_) { /* silent */ }
   };
 

@@ -1,3 +1,4 @@
+import CompleteAIExamples, { AIRequiredButton } from "../components/CompleteAIExamples";
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import AIOutput from '../components/AIOutput';
@@ -42,17 +43,17 @@ export default function AIPostCallDebriefPage() {
         AI drafts crew debriefs for critical calls (trauma, pediatric, cardiac).
       </p>
 
-      <form onSubmit={submit} style={{ display: 'grid', gap: 12, maxWidth: 700, margin: '24px 0' }}>
+      <CompleteAIExamples busy={loading} context="EMS planning review"><form onSubmit={submit} style={{ display: 'grid', gap: 12, maxWidth: 700, margin: '24px 0' }}>
         <div style={{ display: 'flex', gap: 12 }}>
-          <input placeholder="Call ID" value={form.call_id} onChange={set('call_id')} style={{ ...inp, flex: 1 }} />
-          <input placeholder="Call Type *" value={form.call_type} onChange={set('call_type')} required style={{ ...inp, flex: 1 }} />
+          <input data-ai-field="call_id" placeholder="Call ID" value={form.call_id} onChange={set('call_id')} style={{ ...inp, flex: 1 }} />
+          <input data-ai-field="call_type" placeholder="Call Type *" value={form.call_type} onChange={set('call_type')} required style={{ ...inp, flex: 1 }} />
         </div>
-        <input placeholder="Chief Complaint *" value={form.chief_complaint} onChange={set('chief_complaint')} required style={inp} />
-        <input placeholder="Outcome (transported, ROSC, refusal, etc.)" value={form.outcome} onChange={set('outcome')} style={inp} />
-        <textarea placeholder="Interventions" value={form.interventions} onChange={set('interventions')} style={{ ...inp, minHeight: 70, resize: 'vertical' }} />
-        <textarea placeholder="Crew feedback (optional)" value={form.crew_feedback} onChange={set('crew_feedback')} style={{ ...inp, minHeight: 70, resize: 'vertical' }} />
-        <button type="submit" disabled={loading} style={btn}>{loading ? 'Generating...' : 'Generate Debrief'}</button>
-      </form>
+        <input data-ai-field="chief_complaint" placeholder="Chief Complaint *" value={form.chief_complaint} onChange={set('chief_complaint')} required style={inp} />
+        <input data-ai-field="outcome" placeholder="Outcome (transported, ROSC, refusal, etc.)" value={form.outcome} onChange={set('outcome')} style={inp} />
+        <textarea data-ai-field="interventions" placeholder="Interventions" value={form.interventions} onChange={set('interventions')} style={{ ...inp, minHeight: 70, resize: 'vertical' }} />
+        <textarea data-ai-field="crew_feedback" placeholder="Crew feedback (optional)" value={form.crew_feedback} onChange={set('crew_feedback')} style={{ ...inp, minHeight: 70, resize: 'vertical' }} />
+        <AIRequiredButton data-ai-generate type="submit" disabled={loading} style={btn}>{loading ? 'Generating...' : 'Generate Debrief'}</AIRequiredButton>
+      </form></CompleteAIExamples>
 
       {error && <div style={errBox}>{error}</div>}
       <AIOutput result={result} loading={loading} title="Crew Debrief" />

@@ -1,3 +1,4 @@
+import CompleteAIExamples, { AIRequiredButton } from "../components/CompleteAIExamples";
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -85,10 +86,10 @@ export default function AITriagePage() {
             <i className="fas fa-clipboard-list" style={{ color: '#00d4ff', marginRight: 8 }} />
             Call Information
           </h2>
-          <form onSubmit={handleSubmit}>
+          <CompleteAIExamples busy={loading} context="EMS planning review"><form onSubmit={handleSubmit}>
             <div style={s.field}>
               <label style={s.label}>Call Description</label>
-              <textarea
+              <textarea data-ai-field="callDescription"
                 style={{ ...s.input, ...s.textarea, minHeight: 100 }}
                 value={form.callDescription}
                 onChange={set('callDescription')}
@@ -99,7 +100,7 @@ export default function AITriagePage() {
             <div style={s.row}>
               <div style={{ flex: 1 }}>
                 <label style={s.label}>Patient Age</label>
-                <input
+                <input data-ai-field="patientAge"
                   style={s.input}
                   type="number"
                   value={form.patientAge}
@@ -111,7 +112,7 @@ export default function AITriagePage() {
               </div>
               <div style={{ flex: 1 }}>
                 <label style={s.label}>Patient Gender</label>
-                <select style={s.input} value={form.patientGender} onChange={set('patientGender')}>
+                <select data-ai-field="patientGender" style={s.input} value={form.patientGender} onChange={set('patientGender')}>
                   <option value="">Select...</option>
                   <option value="Male">Male</option>
                   <option value="Female">Female</option>
@@ -122,7 +123,7 @@ export default function AITriagePage() {
             </div>
             <div style={s.field}>
               <label style={s.label}>Chief Complaint</label>
-              <input
+              <input data-ai-field="chiefComplaint"
                 style={s.input}
                 type="text"
                 value={form.chiefComplaint}
@@ -133,21 +134,21 @@ export default function AITriagePage() {
             </div>
             <div style={s.field}>
               <label style={s.label}>Additional Symptoms</label>
-              <textarea
+              <textarea data-ai-field="additionalSymptoms"
                 style={{ ...s.input, ...s.textarea }}
                 value={form.additionalSymptoms}
                 onChange={set('additionalSymptoms')}
                 placeholder="Any additional symptoms, history, or relevant information..."
               />
             </div>
-            <button type="submit" style={s.submitBtn} disabled={loading} className="ai-submit-btn">
+            <AIRequiredButton data-ai-generate type="submit" style={s.submitBtn} disabled={loading} className="ai-submit-btn">
               {loading ? (
                 <span><i className="fas fa-spinner fa-spin" style={{ marginRight: 8 }} />Analyzing...</span>
               ) : (
                 <span><i className="fas fa-brain" style={{ marginRight: 8 }} />Analyze with AI</span>
               )}
-            </button>
-          </form>
+            </AIRequiredButton>
+          </form></CompleteAIExamples>
         </div>
 
         {/* Results */}

@@ -1,3 +1,4 @@
+import CompleteAIExamples, { AIRequiredButton } from "../components/CompleteAIExamples";
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import AIOutput from '../components/AIOutput';
@@ -40,11 +41,11 @@ export default function AICrewSchedulePage() {
         AI generates an NFPA-1500 compliant shift rotation with ALS coverage.
       </p>
 
-      <form onSubmit={submit} style={{ display: 'grid', gap: 12, maxWidth: 600, margin: '24px 0' }}>
-        <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} required style={inp} />
-        <input type="number" min={1} max={28} value={days} onChange={(e) => setDays(e.target.value)} style={inp} />
-        <button type="submit" disabled={loading} style={btn}>{loading ? 'Generating...' : 'Generate Schedule'}</button>
-      </form>
+      <CompleteAIExamples busy={loading} context="EMS planning review"><form onSubmit={submit} style={{ display: 'grid', gap: 12, maxWidth: 600, margin: '24px 0' }}>
+        <input data-ai-field="startDate" type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} required style={inp} />
+        <input data-ai-field="days" type="number" min={1} max={28} value={days} onChange={(e) => setDays(e.target.value)} style={inp} />
+        <AIRequiredButton data-ai-generate type="submit" disabled={loading} style={btn}>{loading ? 'Generating...' : 'Generate Schedule'}</AIRequiredButton>
+      </form></CompleteAIExamples>
 
       {error && <div style={errBox}>{error}</div>}
       <AIOutput result={result} loading={loading} title="Generated Schedule" />

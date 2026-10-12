@@ -23,8 +23,10 @@ const ExposurePage = () => {
   const fetchData = async () => {
     try {
       const res = await fetch('/api/exposure', { headers });
-      const data = await res.json();
-      setExposures(data);
+      const payload = await res.json();
+      if (!res.ok) throw new Error(payload.error || 'Failed to load records');
+      if (!Array.isArray(payload?.data)) throw new Error('Invalid list response');
+      setExposures(payload.data);
     } catch (err) { console.error(err); }
     setLoading(false);
   };

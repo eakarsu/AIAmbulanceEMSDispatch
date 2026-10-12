@@ -1,4 +1,6 @@
+import CompleteAIExamples, { AIRequiredButton } from "../components/CompleteAIExamples";
 import React, { useState } from 'react';
+import FormattedAIReport from '../components/FormattedAIReport';
 import { Link } from 'react-router-dom';
 
 // Apply pass 5 — UI for AI backlog endpoints in routes/aiBacklog.js.
@@ -87,22 +89,22 @@ export default function AIBacklogPage() {
       </div>
 
       <div style={s.grid}>
-        <form onSubmit={submit} style={s.card}>
+        <CompleteAIExamples busy={loading} context="EMS planning review"><form onSubmit={submit} style={s.card}>
           <h3 style={s.h3}>{tool.label}</h3>
           {tool.fields.map((f) => (
             <div key={f} style={s.field}>
               <label style={s.label}>{f.replace(/_/g, ' ')}</label>
-              <input style={s.input} value={form[f] ?? ''} onChange={set(f)} />
+              <input data-ai-field={f} style={s.input} value={form[f] ?? ''} onChange={set(f)} />
             </div>
           ))}
-          <button type="submit" style={s.submit} disabled={loading}>{loading ? 'Running…' : 'Run AI'}</button>
-        </form>
+          <AIRequiredButton data-ai-generate type="submit" style={s.submit} disabled={loading}>{loading ? 'Running…' : 'Run AI'}</AIRequiredButton>
+        </form></CompleteAIExamples>
 
         <div style={s.card}>
           <h3 style={s.h3}>Result</h3>
           {error && <div style={s.error}>{error}</div>}
           {!error && !result && <p style={s.empty}>Submit form to view AI output.</p>}
-          {result && <pre style={s.pre}>{JSON.stringify(result, null, 2)}</pre>}
+          {result !== null && <FormattedAIReport response={result} title={tool.label} />}
         </div>
       </div>
 

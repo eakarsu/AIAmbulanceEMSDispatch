@@ -1,3 +1,4 @@
+import CompleteAIExamples, { AIRequiredButton } from "../components/CompleteAIExamples";
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import AIOutput from '../components/AIOutput';
@@ -40,14 +41,14 @@ export default function AIHospitalDivertPage() {
         Real-time bed availability + ED wait times; AI recommends divert destination minimizing patient delay.
       </p>
 
-      <form onSubmit={submit} style={{ display: 'grid', gap: 12, maxWidth: 600, margin: '24px 0' }}>
-        <input className="input" placeholder="Patient Acuity (e.g., critical, stable)" value={form.patient_acuity} onChange={set('patient_acuity')} style={inp} />
-        <input className="input" placeholder="Chief Complaint *" value={form.chief_complaint} onChange={set('chief_complaint')} required style={inp} />
-        <input className="input" placeholder="Current Location" value={form.current_location} onChange={set('current_location')} style={inp} />
-        <button type="submit" disabled={loading} style={btn}>
+      <CompleteAIExamples busy={loading} context="EMS planning review"><form onSubmit={submit} style={{ display: 'grid', gap: 12, maxWidth: 600, margin: '24px 0' }}>
+        <input data-ai-field="patient_acuity" className="input" placeholder="Patient Acuity (e.g., critical, stable)" value={form.patient_acuity} onChange={set('patient_acuity')} style={inp} />
+        <input data-ai-field="chief_complaint" className="input" placeholder="Chief Complaint *" value={form.chief_complaint} onChange={set('chief_complaint')} required style={inp} />
+        <input data-ai-field="current_location" className="input" placeholder="Current Location" value={form.current_location} onChange={set('current_location')} style={inp} />
+        <AIRequiredButton data-ai-generate type="submit" disabled={loading} style={btn}>
           {loading ? 'Analyzing...' : 'Get Hospital Recommendation'}
-        </button>
-      </form>
+        </AIRequiredButton>
+      </form></CompleteAIExamples>
 
       {error && <div style={errBox}>{error}</div>}
       <AIOutput result={result} loading={loading} title="Hospital Recommendation" />

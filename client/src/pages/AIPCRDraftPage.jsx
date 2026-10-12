@@ -1,3 +1,4 @@
+import CompleteAIExamples, { AIRequiredButton } from "../components/CompleteAIExamples";
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -182,20 +183,20 @@ export default function AIPCRDraftPage() {
             <i className="fas fa-clipboard-list" style={{ color: '#00d4ff', marginRight: 8 }} />
             Patient & Call Information
           </h2>
-          <form onSubmit={handleSubmit}>
+          <CompleteAIExamples busy={loading} context="EMS planning review"><form onSubmit={handleSubmit}>
             {/* Patient info */}
             <div style={s.row3}>
               <div style={{ flex: 1 }}>
                 <label style={s.label}>Patient Name</label>
-                <input style={s.input} value={form.patientName} onChange={set('patientName')} placeholder="Full name" />
+                <input data-ai-field="patientName" style={s.input} value={form.patientName} onChange={set('patientName')} placeholder="Full name" />
               </div>
               <div style={{ flex: 0.5 }}>
                 <label style={s.label}>Age</label>
-                <input style={s.input} type="number" value={form.patientAge} onChange={set('patientAge')} placeholder="Age" />
+                <input data-ai-field="patientAge" style={s.input} type="number" value={form.patientAge} onChange={set('patientAge')} placeholder="Age" />
               </div>
               <div style={{ flex: 0.6 }}>
                 <label style={s.label}>Gender</label>
-                <select style={s.input} value={form.patientGender} onChange={set('patientGender')}>
+                <select data-ai-field="patientGender" style={s.input} value={form.patientGender} onChange={set('patientGender')}>
                   <option value="">Select...</option>
                   <option value="Male">Male</option>
                   <option value="Female">Female</option>
@@ -206,12 +207,12 @@ export default function AIPCRDraftPage() {
 
             <div style={s.field}>
               <label style={s.label}>Chief Complaint</label>
-              <input style={s.input} value={form.chiefComplaint} onChange={set('chiefComplaint')} placeholder="Primary complaint" required />
+              <input data-ai-field="chiefComplaint" style={s.input} value={form.chiefComplaint} onChange={set('chiefComplaint')} placeholder="Primary complaint" required />
             </div>
 
             <div style={s.field}>
               <label style={s.label}>Call Description</label>
-              <textarea style={{ ...s.input, ...s.textarea, minHeight: 80 }} value={form.callDescription} onChange={set('callDescription')} placeholder="Detailed scene and patient description..." required />
+              <textarea data-ai-field="callDescription" style={{ ...s.input, ...s.textarea, minHeight: 80 }} value={form.callDescription} onChange={set('callDescription')} placeholder="Detailed scene and patient description..." required />
             </div>
 
             {/* Vitals */}
@@ -230,7 +231,7 @@ export default function AIPCRDraftPage() {
                 ].map(({ key, placeholder, label: l }) => (
                   <div key={key}>
                     <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.35)', fontWeight: 600, letterSpacing: 0.5 }}>{l}</span>
-                    <input style={{ ...s.input, padding: '8px 10px', fontSize: 13 }} value={form[key]} onChange={set(key)} placeholder={placeholder} />
+                    <input data-ai-field={key} style={{ ...s.input, padding: '8px 10px', fontSize: 13 }} value={form[key]} onChange={set(key)} placeholder={placeholder} />
                   </div>
                 ))}
               </div>
@@ -238,18 +239,18 @@ export default function AIPCRDraftPage() {
 
             <div style={s.field}>
               <label style={s.label}>Treatments Given</label>
-              <textarea style={{ ...s.input, ...s.textarea }} value={form.treatmentsGiven} onChange={set('treatmentsGiven')} placeholder="Medications, interventions, etc." />
+              <textarea data-ai-field="treatmentsGiven" style={{ ...s.input, ...s.textarea }} value={form.treatmentsGiven} onChange={set('treatmentsGiven')} placeholder="Medications, interventions, etc." />
             </div>
 
             <div style={s.field}>
               <label style={s.label}>Procedures</label>
-              <textarea style={{ ...s.input, ...s.textarea }} value={form.procedures} onChange={set('procedures')} placeholder="IV access, intubation, splinting, etc." />
+              <textarea data-ai-field="procedures" style={{ ...s.input, ...s.textarea }} value={form.procedures} onChange={set('procedures')} placeholder="IV access, intubation, splinting, etc." />
             </div>
 
             <div style={s.row}>
               <div style={{ flex: 1 }}>
                 <label style={s.label}>Transport Disposition</label>
-                <select style={s.input} value={form.transportDisposition} onChange={set('transportDisposition')}>
+                <select data-ai-field="transportDisposition" style={s.input} value={form.transportDisposition} onChange={set('transportDisposition')}>
                   <option value="">Select...</option>
                   <option value="Transported - Emergency">Transported - Emergency</option>
                   <option value="Transported - Non-Emergency">Transported - Non-Emergency</option>
@@ -260,18 +261,18 @@ export default function AIPCRDraftPage() {
               </div>
               <div style={{ flex: 1 }}>
                 <label style={s.label}>Receiving Facility</label>
-                <input style={s.input} value={form.receivingFacility} onChange={set('receivingFacility')} placeholder="Hospital name" />
+                <input data-ai-field="receivingFacility" style={s.input} value={form.receivingFacility} onChange={set('receivingFacility')} placeholder="Hospital name" />
               </div>
             </div>
 
-            <button type="submit" style={s.submitBtn} disabled={loading} className="ai-submit-btn">
+            <AIRequiredButton data-ai-generate type="submit" style={s.submitBtn} disabled={loading} className="ai-submit-btn">
               {loading ? (
                 <span><i className="fas fa-spinner fa-spin" style={{ marginRight: 8 }} />Generating report...</span>
               ) : (
                 <span><i className="fas fa-magic" style={{ marginRight: 8 }} />Generate PCR Draft</span>
               )}
-            </button>
-          </form>
+            </AIRequiredButton>
+          </form></CompleteAIExamples>
         </div>
 
         {/* Results */}

@@ -1,3 +1,4 @@
+import CompleteAIExamples, { AIRequiredButton } from "../components/CompleteAIExamples";
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import AIOutput from '../components/AIOutput';
@@ -39,11 +40,11 @@ export default function AIMutualAidOptimizerPage() {
         AI predicts coverage gaps and proactively suggests mutual aid requests.
       </p>
 
-      <form onSubmit={submit} style={{ display: 'flex', gap: 12, alignItems: 'center', margin: '24px 0' }}>
+      <CompleteAIExamples busy={loading} context="EMS planning review"><form onSubmit={submit} style={{ display: 'flex', gap: 12, alignItems: 'center', margin: '24px 0' }}>
         <label>Look ahead (hours):</label>
-        <input type="number" min={1} max={72} value={hours} onChange={(e) => setHours(e.target.value)} style={{ ...inp, width: 100 }} />
-        <button type="submit" disabled={loading} style={btn}>{loading ? 'Analyzing...' : 'Analyze Coverage'}</button>
-      </form>
+        <input data-ai-field="hours" type="number" min={1} max={72} value={hours} onChange={(e) => setHours(e.target.value)} style={{ ...inp, width: 100 }} />
+        <AIRequiredButton data-ai-generate type="submit" disabled={loading} style={btn}>{loading ? 'Analyzing...' : 'Analyze Coverage'}</AIRequiredButton>
+      </form></CompleteAIExamples>
 
       {error && <div style={errBox}>{error}</div>}
       <AIOutput result={result} loading={loading} title="Coverage & Mutual Aid Plan" />

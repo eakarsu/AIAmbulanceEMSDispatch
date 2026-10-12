@@ -21,8 +21,10 @@ const MutualAidPage = () => {
   const fetchData = async () => {
     try {
       const res = await fetch('/api/mutual-aid', { headers });
-      const data = await res.json();
-      setRecords(data);
+      const payload = await res.json();
+      if (!res.ok) throw new Error(payload.error || 'Failed to load records');
+      if (!Array.isArray(payload?.data)) throw new Error('Invalid list response');
+      setRecords(payload.data);
     } catch (err) { console.error(err); }
     setLoading(false);
   };

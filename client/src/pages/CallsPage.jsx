@@ -107,7 +107,7 @@ export default function CallsPage() {
   const fetchUnits = async () => {
     try {
       const res = await fetch(UNITS_API, { headers: getHeaders() });
-      if (res.ok) setUnits(await res.json());
+      if (res.ok) { const payload = await res.json(); setUnits(Array.isArray(payload?.data) ? payload.data : []); }
     } catch (_) { /* silent */ }
   };
 
